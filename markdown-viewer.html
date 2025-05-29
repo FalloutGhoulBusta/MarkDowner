@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dragon Fruit Markdown Viewer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ff1b6b, #45caff, #ff6b35);
+            background-size: 400% 400%;
+            animation: dragonGradient 8s ease infinite;
+            min-height: 100vh;
+            color: #2d1b36;
+        }
+
+        @keyframes dragonGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            height: 100vh;
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(255, 27, 107, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            background: linear-gradient(45deg, #ff1b6b, #ff6b35);
+            color: white;
+            padding: 15px 20px;
+            font-weight: bold;
+            font-size: 18px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .editor-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #markdown-input {
+            flex: 1;
+            padding: 20px;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: none;
+            color: #2d1b36;
+        }
+
+        #markdown-input::placeholder {
+            color: #8b5a96;
+            opacity: 0.7;
+        }
+
+        .preview-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .preview-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .preview-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .preview-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, #ff1b6b, #ff6b35);
+            border-radius: 4px;
+        }
+
+        /* Markdown styling with dragon fruit colors */
+        .preview-container h1 {
+            color: #ff1b6b;
+            border-bottom: 3px solid #ff6b35;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 2.2em;
+        }
+
+        .preview-container h2 {
+            color: #ff3d71;
+            border-bottom: 2px solid #ff8a50;
+            padding-bottom: 8px;
+            margin: 25px 0 15px 0;
+            font-size: 1.8em;
+        }
+
+        .preview-container h3 {
+            color: #ff5722;
+            margin: 20px 0 12px 0;
+            font-size: 1.4em;
+        }
+
+        .preview-container h4, .preview-container h5, .preview-container h6 {
+            color: #ff6b35;
+            margin: 15px 0 10px 0;
+        }
+
+        .preview-container p {
+            margin-bottom: 15px;
+            line-height: 1.7;
+            color: #2d1b36;
+        }
+
+        .preview-container code {
+            background: linear-gradient(135deg, #ffe0f0, #fff0e6);
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #d63384;
+            border: 1px solid rgba(255, 107, 53, 0.2);
+        }
+
+        .preview-container pre {
+            background: linear-gradient(135deg, #2d1b36, #4a2c54);
+            color: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            overflow-x: auto;
+            margin: 15px 0;
+            border: 2px solid #ff6b35;
+            box-shadow: 0 8px 16px rgba(255, 27, 107, 0.2);
+        }
+
+        .preview-container pre code {
+            background: none;
+            padding: 0;
+            border: none;
+            color: #ffffff;
+        }
+
+        .preview-container blockquote {
+            border-left: 5px solid #ff1b6b;
+            background: linear-gradient(135deg, rgba(255, 27, 107, 0.1), rgba(255, 107, 53, 0.1));
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 12px 12px 0;
+            font-style: italic;
+        }
+
+        .preview-container ul, .preview-container ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+
+        .preview-container li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        .preview-container a {
+            color: #ff1b6b;
+            text-decoration: none;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .preview-container a:hover {
+            border-bottom-color: #ff6b35;
+            color: #ff3d71;
+        }
+
+        .preview-container table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 16px rgba(255, 27, 107, 0.1);
+        }
+
+        .preview-container th {
+            background: linear-gradient(45deg, #ff1b6b, #ff6b35);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .preview-container td {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255, 107, 53, 0.2);
+        }
+
+        .preview-container tr:hover {
+            background: rgba(255, 27, 107, 0.05);
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #ff1b6b, #ff6b35);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(255, 27, 107, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(255, 27, 107, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr 1fr;
+                height: auto;
+                min-height: 100vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="panel">
+            <div class="panel-header">
+                🐉 Markdown Editor
+            </div>
+            <div class="editor-container">
+                <textarea id="markdown-input" placeholder="# Welcome to Dragon Fruit Markdown Viewer! 🐲
+
+Type your markdown here and see it rendered in real-time with beautiful dragon fruit colors...
+
+## Features
+- **Real-time preview**
+- *Gorgeous dragon fruit theme*
+- `Syntax highlighting`
+- And much more!
+
+> Start typing to see the magic happen!"></textarea>
+                <div class="toolbar">
+                    <button class="btn" onclick="insertText('**bold**')">Bold</button>
+                    <button class="btn" onclick="insertText('*italic*')">Italic</button>
+                    <button class="btn" onclick="insertText('`code`')">Code</button>
+                    <button class="btn" onclick="insertText('> ')">Quote</button>
+                    <button class="btn" onclick="clearEditor()">Clear</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <div class="panel-header">
+                🎨 Live Preview
+            </div>
+            <div class="preview-container" id="preview">
+                <p>Your beautiful markdown will appear here...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const input = document.getElementById('markdown-input');
+        const preview = document.getElementById('preview');
+
+        // Configure marked options
+        marked.setOptions({
+            breaks: true,
+            gfm: true,
+            headerIds: true,
+            highlight: function(code, lang) {
+                return code; // Simple highlighting, you could integrate a syntax highlighter here
+            }
+        });
+
+        function updatePreview() {
+            const markdownText = input.value;
+            if (markdownText.trim() === '') {
+                preview.innerHTML = '<p style="color: #8b5a96; font-style: italic;">Start typing some markdown to see the magic! ✨</p>';
+                return;
+            }
+            
+            try {
+                const html = marked.parse(markdownText);
+                preview.innerHTML = html;
+            } catch (error) {
+                preview.innerHTML = `<p style="color: #ff1b6b;">Error parsing markdown: ${error.message}</p>`;
+            }
+        }
+
+        function insertText(text) {
+            const start = input.selectionStart;
+            const end = input.selectionEnd;
+            const currentText = input.value;
+            
+            input.value = currentText.substring(0, start) + text + currentText.substring(end);
+            input.focus();
+            
+            // Position cursor after inserted text
+            const newPosition = start + text.length;
+            input.setSelectionRange(newPosition, newPosition);
+            
+            updatePreview();
+        }
+
+        function clearEditor() {
+            input.value = '';
+            input.focus();
+            updatePreview();
+        }
+
+        // Real-time preview updates
+        input.addEventListener('input', updatePreview);
+        input.addEventListener('scroll', function() {
+            // Sync scroll position (optional enhancement)
+            const scrollPercent = input.scrollTop / (input.scrollHeight - input.clientHeight);
+            preview.scrollTop = scrollPercent * (preview.scrollHeight - preview.clientHeight);
+        });
+
+        // Initialize with placeholder content
+        input.value = `# Welcome to Dragon Fruit Markdown Viewer! 🐲
+
+This is a **beautiful** markdown editor with a *vibrant* dragon fruit color scheme.
+
+## Features
+
+- Real-time preview
+- Beautiful dragon fruit theme
+- Toolbar shortcuts
+- Responsive design
+
+### Code Example
+
+\`\`\`javascript
+function dragonFruit() {
+    return "Delicious and colorful! 🐉";
+}
+\`\`\`
+
+### Blockquote
+
+> "The dragon fruit's vibrant colors inspire creativity and passion in everything we create."
+
+### Lists
+
+**Ingredients for success:**
+1. Beautiful design
+2. Smooth functionality  
+3. Dragon fruit inspiration
+4. A touch of magic ✨
+
+**Features:**
+- Syntax highlighting
+- Live preview
+- Mobile responsive
+- Easy to use
+
+### Links and More
+
+Check out [Markdown Guide](https://www.markdownguide.org) for more syntax help!
+
+---
+
+**Happy writing!** 🎨`;
+
+        // Initial render
+        updatePreview();
+        
+        // Focus on the editor
+        setTimeout(() => input.focus(), 100);
+    </script>
+</body>
+</html>
