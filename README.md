@@ -16,7 +16,7 @@ A **deliciously beautiful** markdown editor that brings the exotic colors and en
 
 1. **Clone this tropical paradise:**
    ```bash
-   git clone https://github.com/yourusername/MarkDowner.git
+   git clone https://github.com/FalloutGhoulBusta/MarkDowner.git
    cd MarkDowner
    ```
 
