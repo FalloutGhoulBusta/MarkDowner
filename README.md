@@ -17,8 +17,6 @@ A **deliciously beautiful** markdown editor that brings the exotic colors and en
 ![MarkDowner Dragon Fruit Theme](screenshots/markdowner-preview.png)
 *Experience the vibrant dragon fruit colors while editing your markdown in real-time*
 
-> 📝 **Note:** Screenshots will be added soon to showcase the beautiful dragon fruit interface!
-
 ## �🚀 Getting Started
 
 1. **Clone this tropical paradise:**
