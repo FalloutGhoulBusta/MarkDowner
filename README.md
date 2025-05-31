@@ -12,12 +12,12 @@ A **deliciously beautiful** markdown editor that brings the exotic colors and en
 - 📱 **Responsive Design** - Looks stunning on any device, from phone to desktop
 - 🌈 **Animated Background** - Mesmerizing gradient animation that keeps you inspired
 
-## � Screenshots
+## Screenshots
 
 ![MarkDowner Dragon Fruit Theme](screenshots/markdowner-preview.png)
 *Experience the vibrant dragon fruit colors while editing your markdown in real-time*
 
-## �🚀 Getting Started
+## 🚀 Getting Started
 
 1. **Clone this tropical paradise:**
    ```bash
